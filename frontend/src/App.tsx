@@ -1,8 +1,14 @@
 import viteLogo from '/vite.svg'
 import reactLogo from './assets/react.svg'
 import { TransactionList } from './components/transaction-list'
+import { transactionsMock } from './data'
 
 export function App() {
+  const sortedTransactions = [...transactionsMock].sort((a, b) => {
+    const dateA = new Date(a.date)
+    const dateB = new Date(b.date)
+    return dateB.getTime() - dateA.getTime()
+  })
   return (
     <>
       <div className="min-h-screen bg-gray-100">
@@ -18,7 +24,7 @@ export function App() {
           <TransactionList
             balance={Math.random() * 3000}
             limit={1500}
-            transactions={[]}
+            transactions={sortedTransactions}
           />
         </div>
       </div>

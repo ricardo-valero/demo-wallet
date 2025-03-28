@@ -1,13 +1,4 @@
-export interface Transaction {
-  id: string
-  type: 'payment' | 'credit'
-  amount: number
-  name?: string
-  description?: string
-  date: string | Date
-  status?: 'pending' | 'approved'
-  authorizedUser?: string
-}
+import type { Transaction } from '../data'
 
 export const TransactionList = ({
   balance,
