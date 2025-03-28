@@ -51,16 +51,15 @@ const randomGradient = () => {
     `
 }
 
-const NumberFormatter = new Intl.NumberFormat('en-US', {
+const PointsFormatter = new Intl.NumberFormat('en-US', {
   notation: 'compact',
   compactDisplay: 'short',
 })
 
-const formatDate = (dateStr: string | Date) => {
+const formatRelativeDate = (now: Date, dateStr: string | Date) => {
   const date = new Date(dateStr)
-  const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
   if (Math.abs(diffDays) <= 7) {
     return date.toLocaleString('en-US', { weekday: 'long' })
   }
@@ -69,6 +68,50 @@ const formatDate = (dateStr: string | Date) => {
     day: 'numeric',
     year: '2-digit',
   })
+}
+
+function generateDailyPointsArray(): number[] {
+  const max_days_in_season = 93 // Maximum days in a season
+  const points: number[] = [2, 3] // Initial points for day 1 and 2
+  for (let i = 2; i < max_days_in_season; i++) {
+    const newPoints = points[i - 2] + 0.6 * points[i - 1]
+    points.push(newPoints)
+  }
+  return points
+}
+
+const dailyPointsArray = generateDailyPointsArray().map((x) => Math.round(x))
+
+function daysSinceSeasonStart(date: Date) {
+  const monthIndex = date.getMonth() + 1
+  const year = date.getFullYear()
+  let season_start: Date
+  switch (true) {
+    case monthIndex >= 1 && monthIndex <= 2:
+      season_start = new Date(year - 1, 11, 1)
+      break
+    case monthIndex >= 3 && monthIndex <= 5:
+      season_start = new Date(year, 2, 1)
+      break
+    case monthIndex >= 6 && monthIndex <= 8:
+      season_start = new Date(year, 5, 1)
+      break
+    case monthIndex >= 9 && monthIndex <= 11:
+      season_start = new Date(year, 8, 1)
+      break
+    case monthIndex === 12:
+      season_start = new Date(year, 11, 1)
+      break
+    default:
+      throw new Error('Invalid month')
+  }
+  const diffTime = Math.abs(season_start.getTime() - date.getTime())
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+}
+
+function getDailyPoints(date: Date) {
+  return dailyPointsArray[daysSinceSeasonStart(date)]
 }
 
 export const TransactionList = ({
@@ -81,9 +124,9 @@ export const TransactionList = ({
   transactions: Transaction[]
 }) => {
   const cardClass = 'bg-white rounded-lg shadow'
-  const dailyPoints = NumberFormatter.format(Math.random() * 200_000)
   const available = limit - balance
   const now = new Date()
+  const dailyPoints = getDailyPoints(now)
   const currentMonth = now.toLocaleString('default', { month: 'long' })
 
   const [selected, setSelected] = useState<Transaction | null>(null)
@@ -91,16 +134,13 @@ export const TransactionList = ({
     closeOnEscape: true,
     closeOnInteractOutside: true,
     onOpenChange: ({ open }) => {
-      if (!open) {
-        handleClose()
-      }
+      if (!open) handleClose()
     },
   })
   const handleOpen = (transaction: Transaction) => {
     dialog.setOpen(true)
     setSelected(transaction)
   }
-
   const handleClose = () => {
     setSelected(null)
   }
@@ -127,7 +167,9 @@ export const TransactionList = ({
           >
             <h2 className="text-lg font-semibold">Daily Points</h2>
             <div className="flex-auto flex flex-col items-end text-right">
-              <div className="text-gray-400 text-lg">{dailyPoints}</div>
+              <div className="text-gray-400 text-lg">
+                {PointsFormatter.format(dailyPoints)}
+              </div>
             </div>
           </div>
         </div>
@@ -217,7 +259,7 @@ export const TransactionList = ({
                         <span>—</span>
                       </>
                     )}
-                    <span>{formatDate(transaction.date)}</span>
+                    <span>{formatRelativeDate(now, transaction.date)}</span>
                   </div>
                 </div>
               </div>
