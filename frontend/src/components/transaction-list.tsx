@@ -9,8 +9,9 @@ export const TransactionList = ({
   limit: number
   transactions: Transaction[]
 }) => {
+  const cardClass = 'bg-white rounded-lg shadow'
   const dailyPoints = (Math.random() * 200).toFixed(0)
-  const availableBalance = limit - balance
+  const available = limit - balance
   const currentMonth = new Date().toLocaleString('default', { month: 'long' })
 
   const capitalizeFirstLetter = (str: string) => {
@@ -43,66 +44,71 @@ export const TransactionList = ({
       <div className="flex gap-4">
         <div className="flex-auto flex flex-col gap-4">
           {/* Card Balance Block */}
-          <div className="bg-white rounded-lg p-4 shadow">
+          <div
+            className={`flex-auto flex flex-wrap justify-between gap-2 p-4 ${cardClass}`}
+          >
             <h2 className="text-lg font-semibold">Card Balance</h2>
-            <div className="mt-2 text-right">
+            <div className="flex-auto flex flex-col items-end text-right">
               <div className="text-3xl font-bold">${balance.toFixed(2)}</div>
               <div className="text-gray-400">
-                ${availableBalance.toFixed(2)} Available
+                ${available.toFixed(2)} Available
               </div>
             </div>
           </div>
           {/* Daily Points Block */}
-          <div className="bg-white rounded-lg p-4 shadow">
+          <div
+            className={`flex-auto flex flex-wrap justify-between gap-2 p-4 ${cardClass}`}
+          >
             <h2 className="text-lg font-semibold">Daily Points</h2>
-            <div className="mt-2 text-right">
+            <div className="flex-auto flex flex-col items-end text-right">
               <div className="text-gray-400 text-lg">{dailyPoints}K</div>
             </div>
           </div>
         </div>
         {/* No Payment Due Block */}
-        <div className="flex-auto flex flex-col  bg-white rounded-lg p-4 shadow">
-          <h2 className="text-lg font-semibold">No Payment Due</h2>
-          <div className="mt-2 flex-auto flex flex-col justify-between">
+        <div
+          className={`flex-auto flex flex-wrap justify-between gap-2 p-4 ${cardClass}`}
+        >
+          <div>
+            <h2 className="text-lg font-semibold">No Payment Due</h2>
             <div className="text-green-600">
               You've paid your {currentMonth} balance.
             </div>
-            <div className="ml-auto">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  role="img"
-                  aria-label="check"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
+          </div>
+          <div className="flex-auto flex flex-col justify-end items-end text-right">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                role="img"
+                aria-label="check"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
             </div>
           </div>
         </div>
       </div>
-
       {/* Latest Transactions Block */}
       <h1 className="text-2xl font-semibold mb-4">Latest Transactions</h1>
-      <div className="bg-white rounded-lg p-4 shadow">
-        <div className="space-y-4">
+      <div className={`px-4 ${cardClass}`}>
+        <div className="">
           {transactions.slice(0, 10).map((transaction) => {
             return (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between py-2 border-b last:border-b-0"
+                className="py-2 flex items-center justify-between border-b border-b-gray-200 last:border-b-0"
               >
                 <div className="flex items-center space-x-4">
                   <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center text-white"
+                    className="w-12 h-12 aspect-square rounded-lg flex items-center justify-center text-white"
                     style={{ background: getRandomGradient() }}
                   >
                     <span className="text-xl font-semibold">
@@ -114,18 +120,18 @@ export const TransactionList = ({
                       {transaction.name ??
                         capitalizeFirstLetter(transaction.type)}
                     </div>
-                    <div className="flex">
-                      {transaction.status === 'pending' && (
-                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                          {capitalizeFirstLetter(transaction.status)}
+                    {transaction.description && (
+                      <div className="text-sm text-gray-500">
+                        <span className="px-0.5">
+                          {transaction.status === 'pending' && (
+                            <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                              {capitalizeFirstLetter(transaction.status)}
+                            </span>
+                          )}
                         </span>
-                      )}
-                      {transaction.description && (
-                        <div className="text-sm text-gray-500">
-                          {transaction.description}
-                        </div>
-                      )}
-                    </div>
+                        {transaction.description}
+                      </div>
+                    )}
                     <div className="text-xs text-gray-400 flex items-center gap-1">
                       {transaction.authorizedUser && (
                         <>
