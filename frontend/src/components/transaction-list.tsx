@@ -1,5 +1,30 @@
 import type { Transaction } from '../data'
 
+const capitalizeFirstLetter = (str: string) => {
+  if (!str) return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+const getRandomGradient = () => {
+  const hue = Math.floor(Math.random() * 360)
+  return `linear-gradient(135deg, hsl(${hue}, 70%, 20%) 0%, hsl(${hue}, 70%, 30%) 100%)`
+}
+
+const formatDate = (dateStr: string | Date) => {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - date.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  if (diffDays <= 7) {
+    return date.toLocaleDateString('en-US', { weekday: 'long' })
+  }
+  return date.toLocaleDateString('en-US', {
+    month: 'numeric',
+    day: 'numeric',
+    year: '2-digit',
+  })
+}
+
 export const TransactionList = ({
   balance,
   limit,
@@ -13,31 +38,6 @@ export const TransactionList = ({
   const dailyPoints = (Math.random() * 200).toFixed(0)
   const available = limit - balance
   const currentMonth = new Date().toLocaleString('default', { month: 'long' })
-
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str) return str
-    return str.charAt(0).toUpperCase() + str.slice(1)
-  }
-
-  const getRandomGradient = () => {
-    const hue = Math.floor(Math.random() * 360)
-    return `linear-gradient(135deg, hsl(${hue}, 70%, 20%) 0%, hsl(${hue}, 70%, 30%) 100%)`
-  }
-
-  const formatDate = (dateStr: string | Date) => {
-    const date = new Date(dateStr)
-    const now = new Date()
-    const diffTime = Math.abs(now.getTime() - date.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    if (diffDays <= 7) {
-      return date.toLocaleDateString('en-US', { weekday: 'long' })
-    }
-    return date.toLocaleDateString('en-US', {
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit',
-    })
-  }
 
   return (
     <div className="transaction-list p-4 space-y-6">
