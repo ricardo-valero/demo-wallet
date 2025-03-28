@@ -17,8 +17,7 @@
     in {
       default = pkgs.mkShell {
         packages = builtins.attrValues (
-          {inherit (pkgs) nixd nil alejandra;
-          }
+          {inherit (pkgs) nixd nil alejandra;}
           // nodejs pkgs.nodejs-slim_22
         );
       };
