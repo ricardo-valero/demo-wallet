@@ -1,24 +1,69 @@
+import { useDialog } from '@ark-ui/react'
+import { useState } from 'react'
 import type { Transaction } from '../data'
+import { TransactionDetail } from './transaction-detail'
 
 const capitalizeFirstLetter = (str: string) => {
   if (!str) return str
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-const getRandomGradient = () => {
-  const hue = Math.floor(Math.random() * 360)
-  return `linear-gradient(135deg, hsl(${hue}, 70%, 20%) 0%, hsl(${hue}, 70%, 30%) 100%)`
+function randomNum(min: number, max: number) {
+  return Math.random() * (max - min) + min
 }
+
+const randomOklch = () => {
+  const lightness = randomNum(0.7, 0.9)
+  const chroma = randomNum(0.1, 0.2)
+  const hue = randomNum(0, 360)
+  return `${lightness.toFixed(2)} ${chroma.toFixed(2)} ${hue.toFixed(0)}`
+}
+
+const randomRadial = () => {
+  const color = randomOklch()
+  const first = 20 + Math.random() * 55
+  const second = 35 + Math.random() * 55
+  const third = 35 + Math.random() * 55
+  const fourth = 20 + Math.random() * 55
+  return `${first}% ${second}% at ${third}% ${fourth}%, oklch(${color}) 0%, oklch(${color} / 0) 100%`
+}
+
+const randomLinear = () => {
+  const color1 = randomOklch()
+  const color2 = randomOklch()
+  const angle = 115 + Math.random() * 20
+  return `${angle}deg, oklch(${color1}) 0%, oklch(${color2}) 100%`
+}
+
+const randomGradient = () => {
+  const radial1 = randomRadial()
+  const radial2 = randomRadial()
+  const radial3 = randomRadial()
+  const radial4 = randomRadial()
+  const linear = randomLinear()
+  return `
+    radial-gradient(${radial1}),
+    radial-gradient(${radial2}),
+    radial-gradient(${radial3}),
+    radial-gradient(${radial4}),
+    linear-gradient(${linear})
+    `
+}
+
+const NumberFormatter = new Intl.NumberFormat('en-US', {
+  notation: 'compact',
+  compactDisplay: 'short',
+})
 
 const formatDate = (dateStr: string | Date) => {
   const date = new Date(dateStr)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  if (diffDays <= 7) {
-    return date.toLocaleDateString('en-US', { weekday: 'long' })
+  if (Math.abs(diffDays) <= 7) {
+    return date.toLocaleString('en-US', { weekday: 'long' })
   }
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleString('en-US', {
     month: 'numeric',
     day: 'numeric',
     year: '2-digit',
@@ -35,9 +80,29 @@ export const TransactionList = ({
   transactions: Transaction[]
 }) => {
   const cardClass = 'bg-white rounded-lg shadow'
-  const dailyPoints = (Math.random() * 200).toFixed(0)
+  const dailyPoints = NumberFormatter.format(Math.random() * 200_000)
   const available = limit - balance
-  const currentMonth = new Date().toLocaleString('default', { month: 'long' })
+  const now = new Date()
+  const currentMonth = now.toLocaleString('default', { month: 'long' })
+
+  const [selected, setSelected] = useState<Transaction | null>(null)
+  const dialog = useDialog({
+    closeOnEscape: true,
+    closeOnInteractOutside: true,
+    onOpenChange: ({ open }) => {
+      if (!open) {
+        handleClose()
+      }
+    },
+  })
+  const handleOpen = (transaction: Transaction) => {
+    dialog.setOpen(true)
+    setSelected(transaction)
+  }
+
+  const handleClose = () => {
+    setSelected(null)
+  }
 
   return (
     <div className="transaction-list p-4 space-y-6">
@@ -61,7 +126,7 @@ export const TransactionList = ({
           >
             <h2 className="text-lg font-semibold">Daily Points</h2>
             <div className="flex-auto flex flex-col items-end text-right">
-              <div className="text-gray-400 text-lg">{dailyPoints}K</div>
+              <div className="text-gray-400 text-lg">{dailyPoints}</div>
             </div>
           </div>
         </div>
@@ -98,18 +163,27 @@ export const TransactionList = ({
       </div>
       {/* Latest Transactions Block */}
       <h1 className="text-2xl font-semibold mb-4">Latest Transactions</h1>
-      <div className={`px-4 ${cardClass}`}>
+      <div className={cardClass}>
         <div className="">
           {transactions.slice(0, 10).map((transaction) => {
             return (
               <div
                 key={transaction.id}
-                className="py-2 flex items-center justify-between border-b border-b-gray-200 last:border-b-0"
+                className="px-4 py-2 flex items-center justify-between border-b border-b-gray-200 last:border-b-0 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-100"
+                onClick={() => handleOpen(transaction)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleOpen(transaction)
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Transaction ${transaction.id}`}
               >
                 <div className="flex items-center space-x-4">
                   <div
                     className="w-12 h-12 aspect-square rounded-lg flex items-center justify-center text-white"
-                    style={{ background: getRandomGradient() }}
+                    style={{ background: randomGradient(), filter: '8px' }}
                   >
                     <span className="text-xl font-semibold">
                       {transaction.name?.charAt(0)}
@@ -156,6 +230,7 @@ export const TransactionList = ({
           })}
         </div>
       </div>
+      <TransactionDetail transaction={selected} dialog={dialog} />
     </div>
   )
 }

@@ -6,12 +6,12 @@ export type Transaction = z.infer<typeof transactionSchema>
 
 const transactionSchema = z.object({
   id: z.string().uuid().nonempty(),
-  name: z.string().nonempty(),
+  name: z.string().optional(),
   amount: z.number().min(5).max(200),
   type: z.enum(['payment', 'credit']),
-  description: z.string().nonempty(),
+  description: z.string().optional(),
   status: z.enum(['pending', 'approved']),
-  authorizedUser: z.string(),
+  authorizedUser: z.string().optional(),
   date: z.date().min(new Date('2025-02-15')).max(new Date('2025-03-28')),
 })
 

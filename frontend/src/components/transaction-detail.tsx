@@ -2,13 +2,15 @@ import { Dialog, type UseDialogReturn } from '@ark-ui/react/dialog'
 import { Portal } from '@ark-ui/react/portal'
 import type { Transaction } from '../data'
 
-const formatDateTime = (dateStr: string) => {
+const formatDateTime = (dateStr: string | Date) => {
   const date = new Date(dateStr)
   return date.toLocaleString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   })
 }
 
