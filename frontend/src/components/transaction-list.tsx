@@ -1,4 +1,5 @@
 import { useDialog } from '@ark-ui/react'
+import { Icon } from '@iconify-icon/react'
 import { useState } from 'react'
 import type { Transaction } from '../data'
 import { TransactionDetail } from './transaction-detail'
@@ -141,8 +142,8 @@ export const TransactionList = ({
             </div>
           </div>
           <div className="flex-auto flex flex-col justify-end items-end text-right">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg
+            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+              {/* <svg
                 className="w-5 h-5 text-green-600"
                 fill="none"
                 stroke="currentColor"
@@ -156,7 +157,13 @@ export const TransactionList = ({
                   strokeWidth={2}
                   d="M5 13l4 4L19 7"
                 />
-              </svg>
+              </svg> */}
+              <Icon
+                icon="fa6-solid:check"
+                height="100%"
+                width="100%"
+                className="p-4 text-green-600"
+              />
             </div>
           </div>
         </div>

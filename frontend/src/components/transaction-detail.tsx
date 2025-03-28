@@ -1,5 +1,6 @@
 import { Dialog, type UseDialogReturn } from '@ark-ui/react/dialog'
 import { Portal } from '@ark-ui/react/portal'
+import { Icon } from '@iconify-icon/react'
 import type { Transaction } from '../data'
 
 const formatDateTime = (dateStr: string | Date) => {
@@ -30,8 +31,8 @@ export const TransactionDetail = ({
           <Dialog.Content className="h-full w-full transform bg-white shadow-xl">
             {/* Header with back button */}
             <div className="flex items-center border-b border-gray-200 p-4">
-              <Dialog.CloseTrigger className="text-gray-500 hover:text-gray-700">
-                <svg
+              <Dialog.CloseTrigger className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                {/* <svg
                   className="h-6 w-6"
                   fill="none"
                   stroke="currentColor"
@@ -45,7 +46,14 @@ export const TransactionDetail = ({
                     strokeWidth={2}
                     d="M15 19l-7-7 7-7"
                   />
-                </svg>
+                </svg> */}
+                <Icon
+                  icon="fa6-solid:chevron-left"
+                  height="100%"
+                  width="100%"
+                  // className="p-4 text-green-600"
+                  className="w-6 h-6"
+                />
               </Dialog.CloseTrigger>
             </div>
 
