@@ -4,7 +4,7 @@ export interface Transaction {
   amount: number
   name?: string
   description?: string
-  date: string
+  date: string | Date
   status?: 'pending' | 'approved'
   authorizedUser?: string
 }
@@ -32,7 +32,7 @@ export const TransactionList = ({
     return `linear-gradient(135deg, hsl(${hue}, 70%, 20%) 0%, hsl(${hue}, 70%, 30%) 100%)`
   }
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | Date) => {
     const date = new Date(dateStr)
     const now = new Date()
     const diffTime = Math.abs(now.getTime() - date.getTime())
