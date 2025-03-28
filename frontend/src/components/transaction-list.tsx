@@ -163,72 +163,68 @@ export const TransactionList = ({
       </div>
       {/* Latest Transactions Block */}
       <h1 className="text-2xl font-semibold mb-4">Latest Transactions</h1>
-      <div className={cardClass}>
-        <div className="">
-          {transactions.slice(0, 10).map((transaction) => {
-            return (
-              <div
-                key={transaction.id}
-                className="px-4 py-2 flex items-center justify-between border-b border-b-gray-200 last:border-b-0 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-100"
-                onClick={() => handleOpen(transaction)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleOpen(transaction)
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={`Transaction ${transaction.id}`}
-              >
-                <div className="flex items-center space-x-4">
-                  <div
-                    className="w-12 h-12 aspect-square rounded-lg flex items-center justify-center text-white"
-                    style={{ background: randomGradient(), filter: '8px' }}
-                  >
-                    <span className="text-xl font-semibold">
-                      {transaction.name?.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="font-medium flex items-center gap-2">
-                      {transaction.name ??
-                        capitalizeFirstLetter(transaction.type)}
-                    </div>
-                    {transaction.description && (
-                      <div className="text-sm text-gray-500">
-                        <span className="px-0.5">
-                          {transaction.status === 'pending' && (
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                              {capitalizeFirstLetter(transaction.status)}
-                            </span>
-                          )}
-                        </span>
-                        {transaction.description}
-                      </div>
-                    )}
-                    <div className="text-xs text-gray-400 flex items-center gap-1">
-                      {transaction.authorizedUser && (
-                        <>
-                          <span>{transaction.authorizedUser}</span>
-                          <span>—</span>
-                        </>
-                      )}
-                      <span>{formatDate(transaction.date)}</span>
-                    </div>
-                  </div>
+      <div className={`${cardClass} overflow-hidden`}>
+        {transactions.slice(0, 10).map((transaction) => {
+          return (
+            <div
+              key={transaction.id}
+              className="px-4 py-2 flex items-center justify-between border-b border-b-gray-200 last:border-b-0 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-gray-100"
+              onClick={() => handleOpen(transaction)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') handleOpen(transaction)
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Transaction ${transaction.id}`}
+            >
+              <div className="flex items-center space-x-4">
+                <div
+                  className="w-12 h-12 aspect-square rounded-lg flex items-center justify-center text-white"
+                  style={{ background: randomGradient(), filter: '8px' }}
+                >
+                  <span className="text-xl font-semibold">
+                    {transaction.name?.charAt(0)}
+                  </span>
                 </div>
-                <div className="text-right">
-                  <div
-                    className={`font-medium ${transaction.type === 'payment' ? 'text-green-600' : ''}`}
-                  >
-                    {transaction.type === 'payment' ? '+' : ''}$
-                    {transaction.amount.toFixed(2)}
+                <div>
+                  <div className="font-medium flex items-center gap-2">
+                    {transaction.name ??
+                      capitalizeFirstLetter(transaction.type)}
+                  </div>
+                  {transaction.description && (
+                    <div className="text-sm text-gray-500">
+                      <span className="px-0.5">
+                        {transaction.status === 'pending' && (
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                            {capitalizeFirstLetter(transaction.status)}
+                          </span>
+                        )}
+                      </span>
+                      {transaction.description}
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-400 flex items-center gap-1">
+                    {transaction.authorizedUser && (
+                      <>
+                        <span>{transaction.authorizedUser}</span>
+                        <span>—</span>
+                      </>
+                    )}
+                    <span>{formatDate(transaction.date)}</span>
                   </div>
                 </div>
               </div>
-            )
-          })}
-        </div>
+              <div className="text-right">
+                <div
+                  className={`font-medium ${transaction.type === 'payment' ? 'text-green-600' : ''}`}
+                >
+                  {transaction.type === 'payment' ? '+' : ''}$
+                  {transaction.amount.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
       <TransactionDetail transaction={selected} dialog={dialog} />
     </div>
