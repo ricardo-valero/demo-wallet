@@ -1,6 +1,12 @@
 # React + TypeScript + Vite
 
+Setup
+```bash
+pnpm create vite
+```
+
 Install dependencies
+
 ```bash
 pnpm install
 ```
@@ -8,7 +14,7 @@ pnpm install
 Run development server
 ```bash
 pnpm vite
-# or
+# or use the script in package.json
 pnpm run dev
 ```
 
@@ -18,10 +24,11 @@ pnpm run dev
 Setup
 ```bash
 pnpm biome init
-pnpm biome migrate eslint --write --include-inspired
 ```
 
-Run
+Lint and format
 ```bash
-pnpm biome
+pnpm biome check --write <files>
+# or use the script in package.json
+pnpm run lint
 ```
