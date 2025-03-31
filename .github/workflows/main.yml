@@ -7,40 +7,32 @@ on:
   push:
     branches: [ main ]
 
-env:
-  BUILD_PATH: "frontend"
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - name: Check Nixpkgs inputs
+      - name: Check Nix flake inputs
         uses: DeterminateSystems/flake-checker-action@main
         with:
           fail-mode: true
-      - name: Setup Pages
+      - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
-      - name: Install dependencies with pnpm
-        run: |
-          nix develop --command \
-            pnpm install
-        working-directory: ${{ env.BUILD_PATH }}
-      - name: Build with Vite
-        run: |
-          nix develop --command \
-            pnpm vite build \
-              --base "${{ steps.pages.outputs.base_path }}"
-        working-directory: ${{ env.BUILD_PATH }}
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v30
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Pnpm - install dependencies
+        run: nix run .#install
+      - name: Vite - build project
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: nix run .#build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.BUILD_PATH }}/dist
+          path: frontend/dist
 
   deploy:
     environment:
